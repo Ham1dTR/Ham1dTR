@@ -189,7 +189,6 @@
         <div class="nav-item">⚙️</div>
     </div>
 
-    <script>
         // متصل شدن به تلگرام
         const tg = window.Telegram.WebApp;
         tg.expand(); // پر کردن کل صفحه
@@ -202,14 +201,33 @@
 
         // تابع کلیک روی دکمه ها
         function openApp(type) {
-            tg.HapticFeedback.impactOccurred('medium'); // لرزش گوشی
+            tg.HapticFeedback.impactOccurred('medium'); 
             
-            if (type === 'sms') {
-                tg.showAlert("ورود به بخش SMS Bomber (این دکمه هنوز به سرور وصل نیست)");
-            } else if (type === 'call') {
-                tg.showAlert("ورود به بخش Call Bomber (این دکمه هنوز به سرور وصل نیست)");
-            }
+            // ⚠️ آدرس سرور SillyDev خودت
+            const serverUrl = 'http://87.106.100.187:8721/api/'; 
+
+            // گرفتن شماره از کاربر
+            let phone = prompt("شماره موبایل (مثال: 09123456789):");
+            if (!phone) return;
+
+            tg.showPopup({
+                title: 'در حال ارسال...',
+                message: 'لطفا صبر کنید',
+                buttons: [{type: 'close'}]
+            });
+
+            fetch(serverUrl + type, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: phone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                tg.showAlert(data.message || "عملیات انجام شد");
+            })
+            .catch(error => {
+                tg.showAlert("خطا در ارتباط با سرور!");
+            });
         }
-    </script>
 </body>
 </html>
